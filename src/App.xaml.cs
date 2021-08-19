@@ -1,23 +1,22 @@
-﻿using System.Windows;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Navigation;
+using OBS_Remote_Controls.WPF;
+using OBSWebsocketDotNet;
 
 namespace OBS_Remote_Controls
 {
-    /// <summary>
-    /// Interaction logic for App.xaml
-    /// </summary>
     public partial class App : Application
     {
-        private Startup app;
+        private Program app;
 
-        private void Application_Startup(object sender, StartupEventArgs e)
+        private void Application_Startup(object sender, StartupEventArgs args)
         {
-            app = new Startup();
-        }
-
-        protected override void OnExit(ExitEventArgs e)
-        {
-            app.Dispose();
-            base.OnExit(e);
+            app = new Program(args);
         }
     }
 }

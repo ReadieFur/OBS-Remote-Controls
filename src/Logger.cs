@@ -6,7 +6,16 @@ namespace OBS_Remote_Controls
 {
     internal static class Logger
     {
+#if DEBUG
+        public static LogLevel logLevel = LogLevel.Trace;
+#else
         public static LogLevel logLevel = LogLevel.None;
+#endif
+        //Disposal of this window should be ok to be handled automatically.
+        private static WPF.LoggerWindow windowInstance = new WPF.LoggerWindow(4);
+
+        public static void ShowWindow() { windowInstance.Show(); }
+        public static void HideWindow() { windowInstance.Hide(); }
 
         public static void Debug(object _message) { WriteLog(LogLevel.Debug, _message.ToString()); }
         public static void Debug(Exception _ex) { WriteLog(LogLevel.Debug, _ex.Message); }
@@ -29,6 +38,36 @@ namespace OBS_Remote_Controls
             {
                 MethodBase stackTraceMethod = new StackTrace().GetFrame(2).GetMethod();
                 System.Diagnostics.Debug.WriteLine($"[{_logLevel} @ {DateTime.Now} | {stackTraceMethod.DeclaringType}/{stackTraceMethod.Name}] {_message}");
+
+                if (windowInstance.IsVisible)
+                {
+                    switch (_logLevel)
+                    {
+                        case LogLevel.Debug:
+                            windowInstance.Debug(_message);
+                            break;
+                        case LogLevel.Info:
+                            windowInstance.Info(_message);
+                            break;
+                        case LogLevel.Warning:
+                            windowInstance.Warning(_message);
+                            break;
+                        case LogLevel.Error:
+                            windowInstance.Error(_message);
+                            break;
+                        case LogLevel.Critical:
+                            windowInstance.Critical(_message);
+                            break;
+                        case LogLevel.Notice:
+                            windowInstance.Notice(_message);
+                            break;
+                        case LogLevel.Trace:
+                            windowInstance.Trace(_message);
+                            break;
+                        default: //None
+                            break;
+                    }
+                }
             }
         }
 
