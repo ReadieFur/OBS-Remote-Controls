@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Navigation;
 using OBS_Remote_Controls.WPF;
 using OBSWebsocketDotNet;
+using Microsoft.Toolkit.Uwp.Notifications;
 
 namespace OBS_Remote_Controls
 {
@@ -31,10 +32,23 @@ namespace OBS_Remote_Controls
 
             Logger.ShowWindow();
 
-            Task.Run(async () =>
+            ToastNotificationManagerCompat.OnActivated += ToastNotificationManagerCompat_OnActivated;
+            CheckForUpdates().ContinueWith((r) =>
             {
-                string latestVersion = await CheckForUpdates();
-                Logger.Info(latestVersion ?? "null");
+                if (!r.IsFaulted && !r.IsCanceled)
+                {
+                    string latestVersion = r.Result;
+                    Logger.Info($"Version: {latestVersion ?? "null"} | IsNullOrEmpty: {string.IsNullOrEmpty(latestVersion)}");
+                    if (!string.IsNullOrEmpty(latestVersion))
+                    {
+                        //https://docs.microsoft.com/en-us/windows/apps/design/shell/tiles-and-notifications/send-local-toast?tabs=desktop
+                        new ToastContentBuilder()
+                            .AddArgument("update", latestVersion)
+                            .AddText("An update is avaliable!")
+                            .AddText($"Version {latestVersion} is avaliable. You are on version {savedData.data.versionInfo.current}")
+                            .Show();
+                    }
+                }
             });
 
             obsWebsocket = new OBSWebsocket();
@@ -56,28 +70,34 @@ namespace OBS_Remote_Controls
             };
         }
 
+        private void ToastNotificationManagerCompat_OnActivated(ToastNotificationActivatedEventArgsCompat e)
+        {
+            ToastArguments args = ToastArguments.Parse(e.Argument);
+            if (args.Contains("update") && args.Get("update") == savedData.data.versionInfo.latest)
+            {
+                System.Diagnostics.Process.Start(savedData.data.versionInfo.url);
+            }
+        }
+
         internal static async Task<string> CheckForUpdates()
         {
             if (new DateTime(savedData.data.versionInfo.lastChecked).AddHours(1) < DateTime.UtcNow)
             {
                 Octokit.GitHubClient gitClient = new Octokit.GitHubClient(new Octokit.ProductHeaderValue("kOFReadie-OBS-Remote-Controls"));
+                IReadOnlyList<Octokit.Release> releases = await gitClient.Repository.Release.GetAll(396356990);
 
-                IReadOnlyList<Octokit.RepositoryTag> versions = await gitClient.Repository.GetAllTags(266821806); //Change to releases to get the release URL.
-
-                if (versions.Count > 0)
+                if (releases.Count > 0)
                 {
-                    Logger.Debug(new Version(versions[0].Name).ToString());
-                    Logger.Debug(new Version(savedData.data.versionInfo.current).ToString());
-
-                    if (new Version(versions[0].Name) > new Version(savedData.data.versionInfo.current))
+                    if (new Version(releases[0].TagName) > new Version(savedData.data.versionInfo.current))
                     {
                         savedData.data.versionInfo = new AppData.Objects.VersionInfo
                         {
                             lastChecked = DateTime.UtcNow.Ticks,
-                            latest = versions[0].Name
+                            latest = releases[0].TagName,
+                            url = releases[0].HtmlUrl
                         };
 
-                        return versions[0].Name;
+                        return releases[0].TagName;
                     }
                 }
             }
@@ -91,6 +111,7 @@ namespace OBS_Remote_Controls
 
         private void Exit()
         {
+            ToastNotificationManagerCompat.Uninstall();
             systemTray.Close();
             mainWindow.Close();
             savedData.Save();

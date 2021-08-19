@@ -82,19 +82,20 @@ namespace OBS_Remote_Controls.WPF
             run.FontSize = 12;
 
             paragraph.Inlines.Add(run);
-            messages.Blocks.Add(paragraph);
 
-            if ((bool)autoscroll.IsChecked)
+            //This sometimes get thread access errors and 'Dispatcher.Invoke' dosen't help with that.
+            try
             {
-                //This sometimes get thread access errors and 'Dispatcher.Invoke' dosen't help with that.
-                try
+                messages.Blocks.Add(paragraph);
+
+                if ((bool)autoscroll.IsChecked)
                 {
                     messagesContainer.ScrollToEnd();
                 }
-                catch (Exception ex)
-                {
-                    //Logger.Critical(ex);
-                }
+            }
+            catch (Exception ex)
+            {
+                //Logger.Critical(ex);
             }
         }
     }
