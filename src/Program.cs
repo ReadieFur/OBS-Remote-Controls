@@ -84,7 +84,16 @@ namespace OBS_Remote_Controls
             if (new DateTime(savedData.data.versionInfo.lastChecked).AddHours(1) < DateTime.UtcNow)
             {
                 Octokit.GitHubClient gitClient = new Octokit.GitHubClient(new Octokit.ProductHeaderValue("kOFReadie-OBS-Remote-Controls"));
-                IReadOnlyList<Octokit.Release> releases = await gitClient.Repository.Release.GetAll(396356990);
+                IReadOnlyList<Octokit.Release> releases;
+                try
+                {
+                    releases = await gitClient.Repository.Release.GetAll(396356990);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error(ex);
+                    throw ex;
+                }
 
                 if (releases.Count > 0)
                 {
