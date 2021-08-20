@@ -21,13 +21,12 @@ namespace OBS_Remote_Controls
         {
 #if DEBUG
             Logger.logLevel = Logger.LogLevel.Debug;
+            Logger.ShowWindow();
 #else
             Logger.logLevel = Logger.LogLevel.Error;
 #endif
 
             Styles.EnableThemeChecker();
-
-            Logger.ShowWindow();
 
             ToastNotificationManagerCompat.OnActivated += ToastNotificationManagerCompat_OnActivated;
 
