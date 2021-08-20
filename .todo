@@ -2,3 +2,4 @@
 ☐ Add more logging.
 ☐ Add an update changes class to convert any old data to a new format. E.g. an update helper class and store the old version in the config file.
 ☐ Add notifications on state changes, do this by extending and overriding the OBSWebsocket class.
+☐ Change the logo/icon.
