@@ -16,6 +16,7 @@ namespace OBS_Remote_Controls
 
         public static void ShowWindow() { windowInstance.Show(); }
         public static void HideWindow() { windowInstance.Hide(); }
+        public static bool IsWindowVisible() { return windowInstance.IsVisible; }
 
         public static void Debug(object _message) { WriteLog(LogLevel.Debug, _message.ToString()); }
         public static void Debug(Exception _ex) { WriteLog(LogLevel.Debug, _ex.Message); }
@@ -74,13 +75,13 @@ namespace OBS_Remote_Controls
         public enum LogLevel
         {
             None = 0,
-            Debug = 1,
-            Info = 2,
-            Warning = 3,
-            Error = 4,
-            Critical = 5,
-            Notice = 6,
-            Trace = 7
+            Info = 1,
+            Critical = 2,
+            Error = 3,
+            Warning = 4,
+            Notice = 5,
+            Trace = 6,
+            Debug = 7
         }
     }
 }
