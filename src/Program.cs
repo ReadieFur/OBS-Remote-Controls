@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Navigation;
 using OBS_Remote_Controls.WPF;
 using OBSWebsocketDotNet;
 using Microsoft.Toolkit.Uwp.Notifications;
@@ -38,20 +35,33 @@ namespace OBS_Remote_Controls
                 if (!r.IsFaulted && !r.IsCanceled)
                 {
                     string latestVersion = r.Result;
-                    Logger.Info($"Version: {latestVersion ?? "null"} | IsNullOrEmpty: {string.IsNullOrEmpty(latestVersion)}");
                     if (!string.IsNullOrEmpty(latestVersion))
                     {
                         //https://docs.microsoft.com/en-us/windows/apps/design/shell/tiles-and-notifications/send-local-toast?tabs=desktop
                         new ToastContentBuilder()
                             .AddArgument("update", latestVersion)
-                            .AddText("An update is avaliable!")
-                            .AddText($"Version {latestVersion} is avaliable. You are on version {savedData.data.versionInfo.current}")
+                            .AddText("An update is avaliable.")
+                            .AddText($"Version {latestVersion} is avaliable. You are on version {savedData.data.versionInfo.current}.")
                             .Show();
                     }
                 }
             });
 
             obsWebsocket = new OBSWebsocket();
+            obsWebsocket.Connected += (s, e) =>
+            {
+                new ToastContentBuilder()
+                    .AddText("OBS Connected.")
+                    .AddText($"Connected to OBS Websocket at: {savedData.data.clientInfo.address}")
+                    .Show();
+            };
+            obsWebsocket.Disconnected += (s, e) =>
+            {
+                new ToastContentBuilder()
+                    .AddText("OBS Disconnected.")
+                    .AddText($"Connected from OBS Websocket.")
+                    .Show();
+            };
 
             systemTray = new SystemTray();
             systemTray.trayIcon.MouseClick += (s, e) =>

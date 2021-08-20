@@ -7,7 +7,7 @@
         mc:Ignorable="d" Icon="/OBS Remote Controls;component/Resources/Icon.ico"
         Height="450" MinHeight="450" MaxHeight="450" Width="900" MinWidth="900" MaxWidth="900"
         WindowStyle="None" ResizeMode="NoResize" AllowsTransparency="True"
-        Title="OBS Controls">
+        Title="OBS Controls" Loaded="Window_Loaded">
     <Grid Background="{DynamicResource XAMLBackgroundColour}">
         <Grid>
             <Grid.RowDefinitions>
@@ -28,11 +28,10 @@
                 <Button x:Name="minimiseButton" FontFamily="Segoe MDL2 Assets" Content="&#xE921;" HorizontalAlignment="Right" VerticalAlignment="Center" Width="50" Grid.Column="1" Height="50" Style="{DynamicResource HollowButton}" Margin="0,0,50,0"/>
                 <Button x:Name="closeButton" FontFamily="Segoe MDL2 Assets" Content="&#xE8BB;" HorizontalAlignment="Right" VerticalAlignment="Center" Width="50" Grid.Column="1" Height="50" Style="{DynamicResource HollowButton}"/>
             </Grid>
-            <ListBox x:Name="sources" Grid.Row="1">
-                <!--<ListViewItem Height="50">
-                    <CheckBox Content="Hi"/>
-                </ListViewItem>-->
+            <ListBox x:Name="tabs" Grid.Row="1">
+                <!--<ListViewItem Content="Hi" Height="50"/>-->
             </ListBox>
+            <Frame Name="Frame" Grid.Column="1" Margin="10,0,10,10" Grid.Row="1" NavigationUIVisibility="Hidden"/>
         </Grid>
         <!--This border element is hidden while developing the page as it gets in the way, it must be placed on top of everything. It is shown again when the program is ran.-->
         <Border Name="windowBorder" BorderBrush="{DynamicResource XAMLAccentColour}" BorderThickness="1" IsHitTestVisible="False" Visibility="Hidden"/>

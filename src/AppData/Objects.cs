@@ -12,5 +12,11 @@ namespace OBS_Remote_Controls.AppData
             public string latest = "";
             public string url = "";
         }
+
+        public class ClientInfo
+        {
+            public string address = "";
+            public string password = "";
+        }
     }
 }
