@@ -16,8 +16,9 @@ namespace OBS_Remote_Controls
 
             try
             {
-                if (!PathExists(dataPath))
+                if (!File.Exists(dataPath))
                 {
+                    Logger.Trace($"Create file: {dataPath}");
                     CreatePath(dataPath);
                 }
                 else
@@ -25,7 +26,9 @@ namespace OBS_Remote_Controls
                     string json = File.ReadAllText(dataPath);
 
 #if DEBUG
-                    Logger.Trace(json);
+                    Logger.Trace($"Load file: {dataPath}\nContents: {json}");
+#else
+                    Logger.Trace($"Load file: {dataPath}");
 #endif
 
                     if (!string.IsNullOrEmpty(json))
@@ -51,7 +54,7 @@ namespace OBS_Remote_Controls
                     Logger.Trace(json);
 #endif
 
-                    if (!PathExists(dataPath)) { CreatePath(dataPath); }
+                    if (!File.Exists(dataPath)) { CreatePath(dataPath); }
                     File.WriteAllText(dataPath, json);
                     return true;
                 }
@@ -64,10 +67,11 @@ namespace OBS_Remote_Controls
             return false;
         }
 
-        //These will both slow down the program a bit especially if the path is long but it will have to make do.
-        private static bool PathExists(string _path)
+        private static bool CreatePath(string _path)
         {
+            Logger.Trace($"'{_path}'");
             _path = _path.Replace('/', '\\');
+            Logger.Trace($"'{_path}'");
             string[] path = _path.Split('\\');
             string constructedPath = "";
 
@@ -75,50 +79,18 @@ namespace OBS_Remote_Controls
             {
                 for (int i = 0; i < path.Length - 1; i++)
                 {
-                    constructedPath += path[i];
-                    if (Directory.Exists(constructedPath)) { return false; }
+                    constructedPath += $"{path[i]}\\";
+                    Directory.CreateDirectory(constructedPath);
                 }
 
                 constructedPath += path[path.Length - 1];
-
-                if (path[path.Length - 1].Contains(".") && File.Exists(constructedPath))
-                {
-                    return true;
-                }
-                else
-                {
-                    Directory.CreateDirectory(constructedPath);
-                    return true;
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex);
-                return false;
-            }
-        }
-
-        private static bool CreatePath(string _path)
-        {
-            _path = _path.Replace('/', '\\');
-            string[] path = _path.Split('\\');
-            string constructedPath = "";
-
-            try
-            {
-                for (int i = 0; i < path.Length - 1; i++)
-                {
-                    constructedPath += path[i];
-                    Directory.CreateDirectory(constructedPath);
-                }
-
                 if (path[path.Length - 1].Contains("."))
                 {
-                    File.Create(_path).Close();
+                    File.Create(constructedPath).Close();
                 }
                 else
                 {
-                    Directory.CreateDirectory(_path);
+                    Directory.CreateDirectory(constructedPath);
                 }
 
                 return true;
