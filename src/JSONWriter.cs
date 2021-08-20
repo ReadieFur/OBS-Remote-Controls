@@ -24,7 +24,6 @@ namespace OBS_Remote_Controls
                 else
                 {
                     string json = File.ReadAllText(dataPath);
-
 #if DEBUG
                     Logger.Trace($"Load file: {dataPath}\nContents: {json}");
 #else
@@ -51,7 +50,9 @@ namespace OBS_Remote_Controls
                 {
                     string json = JsonConvert.SerializeObject(data, Formatting.None);
 #if DEBUG
-                    Logger.Trace(json);
+                    Logger.Trace($"Save file: {dataPath}\nContents: {json}");
+#else
+                    Logger.Trace($"Save file: {dataPath}");
 #endif
 
                     if (!File.Exists(dataPath)) { CreatePath(dataPath); }

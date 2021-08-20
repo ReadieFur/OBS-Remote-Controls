@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:OBS_Remote_Controls.WPF"
         mc:Ignorable="d" Icon="/OBS Remote Controls;component/Resources/Icon.ico"
-        Title="Console" Width="800" Height="450" MinWidth="400" MinHeight="250">
+        Title="Logs" Width="800" Height="450" MinWidth="400" MinHeight="250">
     <Grid Background="Black">
         <RichTextBox Name="messagesContainer" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" IsReadOnly="True" Margin="0,0,0,25" Background="Black" BorderBrush="{x:Null}" Foreground="{x:Null}" Style="{DynamicResource RichTextBoxNoBorder}">
             <RichTextBox.Resources>
