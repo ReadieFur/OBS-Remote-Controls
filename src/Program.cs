@@ -20,9 +20,9 @@ namespace OBS_Remote_Controls
         public Program(StartupEventArgs args)
         {
 #if DEBUG
-            Logger.logLevel = Logger.LogLevel.Trace;
+            Logger.logLevel = Logger.LogLevel.Debug;
 #else
-            Logger.logLevel = Logger.LogLevel.Info;
+            Logger.logLevel = Logger.LogLevel.Error;
 #endif
 
             Styles.EnableThemeChecker();
@@ -30,12 +30,13 @@ namespace OBS_Remote_Controls
             Logger.ShowWindow();
 
             ToastNotificationManagerCompat.OnActivated += ToastNotificationManagerCompat_OnActivated;
-            CheckForUpdates().ContinueWith((r) =>
+
+            CheckForUpdates().ContinueWith((t) =>
             {
-                if (!r.IsFaulted && !r.IsCanceled)
+                if (!t.IsFaulted && !t.IsCanceled)
                 {
-                    string latestVersion = r.Result;
-                    if (!string.IsNullOrEmpty(latestVersion))
+                    string latestVersion = t.Result;
+                    if (!string.IsNullOrEmpty(latestVersion) && savedData.data.preferences.showNotifications)
                     {
                         //https://docs.microsoft.com/en-us/windows/apps/design/shell/tiles-and-notifications/send-local-toast?tabs=desktop
                         new ToastContentBuilder()
@@ -50,17 +51,23 @@ namespace OBS_Remote_Controls
             obsWebsocket = new OBSWebsocket();
             obsWebsocket.Connected += (s, e) =>
             {
-                new ToastContentBuilder()
+                if (savedData.data.preferences.showNotifications)
+                {
+                    new ToastContentBuilder()
                     .AddText("OBS Connected.")
                     .AddText($"Connected to OBS Websocket at: {savedData.data.clientInfo.address}")
                     .Show();
+                }
             };
             obsWebsocket.Disconnected += (s, e) =>
             {
-                new ToastContentBuilder()
+                if (savedData.data.preferences.showNotifications)
+                {
+                    new ToastContentBuilder()
                     .AddText("OBS Disconnected.")
                     .AddText($"Connected from OBS Websocket.")
                     .Show();
+                }
             };
 
             systemTray = new SystemTray();
@@ -77,6 +84,13 @@ namespace OBS_Remote_Controls
             {
                 systemTray.trayIcon.Visible = true;
                 mainWindow.Hide();
+                if (savedData.data.preferences.showNotifications)
+                {
+                    new ToastContentBuilder()
+                    .AddText("Minimised to tray.")
+                    .AddText($"OBS Remote Controls has been minimised to the system tray.")
+                    .Show();
+                }
             };
         }
 
@@ -89,7 +103,7 @@ namespace OBS_Remote_Controls
             }
         }
 
-        internal static async Task<string> CheckForUpdates()
+        public static async Task<string> CheckForUpdates()
         {
             if (new DateTime(savedData.data.versionInfo.lastChecked).AddHours(1) < DateTime.UtcNow)
             {
