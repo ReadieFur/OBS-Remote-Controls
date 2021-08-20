@@ -18,5 +18,10 @@ namespace OBS_Remote_Controls.AppData
             public string address = "";
             public string password = "";
         }
+
+        public class Preferences
+        {
+            public bool showNotifications = true;
+        }
     }
 }

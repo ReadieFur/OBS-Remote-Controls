@@ -4,5 +4,6 @@
     {
         public Objects.VersionInfo versionInfo = new Objects.VersionInfo();
         public Objects.ClientInfo clientInfo = new Objects.ClientInfo();
+        public Objects.Preferences preferences = new Objects.Preferences();
     }
 }
