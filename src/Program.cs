@@ -58,6 +58,13 @@ namespace OBS_Remote_Controls
                     .AddText($"Connected to OBS Websocket at: {savedData.data.clientInfo.address}")
                     .Show();
                 }
+
+#if DEBUG
+               obsWebsocket.WSConnection.OnOpen += (_s, _e) => { Logger.Trace($"OnOpen"); };
+               obsWebsocket.WSConnection.OnError += (_s, _e) => { Logger.Trace($"OnError"); };
+               obsWebsocket.WSConnection.OnClose += (_s, _e) => { Logger.Trace($"OnClose"); };
+               obsWebsocket.WSConnection.OnMessage += (_s, _e) => { Logger.Trace($"OnMessage: {_e.Data}"); };
+#endif
             };
             obsWebsocket.Disconnected += (s, e) =>
             {

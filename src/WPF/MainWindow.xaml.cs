@@ -24,6 +24,7 @@ namespace OBS_Remote_Controls.WPF
             pages = new Dictionary<ListViewItem, Page>
             {
                 { new ListViewItem { Tag = "Connection" }, new Pages.Connection(ref obsWebsocket) },
+                { new ListViewItem { Tag = "Hotkeys" }, new Pages.Hotkeys(ref obsWebsocket) },
                 { new ListViewItem { Tag = "About" }, new Pages.About() }
             };
         }

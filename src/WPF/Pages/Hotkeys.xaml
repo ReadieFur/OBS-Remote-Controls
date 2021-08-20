@@ -1,0 +1,41 @@
+﻿<Page x:Class="OBS_Remote_Controls.WPF.Pages.Hotkeys"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:OBS_Remote_Controls.WPF.Pages"
+      mc:Ignorable="d"
+      d:DesignWidth="620" d:DesignHeight="390"
+      Title="Hotkeys">
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="206"/>
+            <ColumnDefinition Width="206"/>
+            <ColumnDefinition Width="206"/>
+        </Grid.ColumnDefinitions>
+        <Label Content="Key" HorizontalAlignment="Left" VerticalAlignment="Top" Height="24" Width="31"/>
+        <Label Content="Combination" HorizontalAlignment="Left" VerticalAlignment="Top" Height="24" Width="83" Grid.Column="1"/>
+        <Label Content="Action" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="2" Height="24" Width="47"/>
+        <ListBox Name="listBox" Margin="0,24,0,35" Grid.ColumnSpan="3" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+            <!--<ListBoxItem>-->
+            <!--<StackPanel Orientation="Horizontal">
+                    <ComboBox Width="195" Margin="0,0,12,0">
+                        <ComboBoxItem Content="Item 1"/>
+                        <ComboBoxItem Content="Item 2"/>
+                    </ComboBox>
+                    <ComboBox Width="195" Margin="0,0,12,0">
+                        <ComboBoxItem Content="Item 1"/>
+                        <ComboBoxItem Content="Item 2"/>
+                    </ComboBox>
+                    <ComboBox Width="190" Margin="0,0,12,0" Tag="Why does this last one have to be slightly shorter to not get cut off REEE">
+                        <ComboBoxItem Content="Item 1"/>
+                        <ComboBoxItem Content="Item 2"/>
+                    </ComboBox>
+                </StackPanel>-->
+            <!--</ListBoxItem>-->
+        </ListBox>
+        <Button Name="subtract" Click="subtract_Click" FontFamily="Segoe MDL2 Assets" Content="&#xE738;" FontWeight="Normal" HorizontalAlignment="Left" VerticalAlignment="Top" Width="30" Grid.Column="2" Margin="146,360,0,0" Height="30" Style="{DynamicResource HollowButton}"/>
+        <Button Name="add" Click="add_Click" FontFamily="Segoe MDL2 Assets" Content="&#xE710;" FontWeight="Normal" HorizontalAlignment="Left" VerticalAlignment="Top" Width="30" Grid.Column="2" Margin="176,360,0,0" Height="30" Style="{DynamicResource HollowButton}"/>
+    </Grid>
+</Page>
