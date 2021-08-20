@@ -6,11 +6,11 @@
       xmlns:local="clr-namespace:OBS_Remote_Controls.WPF.Pages"
       mc:Ignorable="d" 
       d:DesignWidth="620" d:DesignHeight="390"
-      Title="Connection">
+      Title="Connection" IsVisibleChanged="Page_IsVisibleChanged">
 
     <Grid>
         <Label Content="Address:" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="14" Padding="0,5,5,5"/>
-        <TextBox Name="address" HorizontalAlignment="Left" Height="25" TextWrapping="Wrap" VerticalAlignment="Top" Width="465" Margin="0,27,0,0" Text="ws://ip:port"/>
+        <TextBox Name="address" HorizontalAlignment="Left" Height="25" TextWrapping="Wrap" VerticalAlignment="Top" Width="465" Margin="0,27,0,0" Text="ws://ip:port" TextChanged="address_TextChanged"/>
         <Label Content="Password:" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,57,0,0" FontSize="14" Padding="0,5,5,5"/>
         <PasswordBox Name="password" VerticalAlignment="Top" Height="25" Margin="0,84,0,0" HorizontalAlignment="Left" Width="465"/>
         <Button Content="Connect" Click="connect_Click" Name="connect" HorizontalAlignment="Left" VerticalAlignment="Top" Width="120" Margin="0,119,0,0" Height="30"/>

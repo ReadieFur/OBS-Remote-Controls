@@ -1,18 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using OBSWebsocketDotNet;
+using System.Text.RegularExpressions;
 
 namespace OBS_Remote_Controls.WPF.Pages
 {
@@ -21,6 +11,8 @@ namespace OBS_Remote_Controls.WPF.Pages
     /// </summary>
     public partial class Connection : Page
     {
+        private Regex addressRegex = new Regex(@"ws:\/\/(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}):\d{4}", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
         private readonly OBSWebsocket obsWebsocket;
 
         public Connection(ref OBSWebsocket _obsWebsocket)
@@ -42,10 +34,16 @@ namespace OBS_Remote_Controls.WPF.Pages
             Connect(address.Text, password.Password);
         }
 
-        //Add validation checks here
         private bool Connect(string _address, string _password)
         {
             status.Content = "Status: Connecting...";
+
+            Match match = addressRegex.Match(_address);
+            if (match == null || match.Length != _address.Length)
+            {
+                status.Content = "Status: Failed";
+                return false;
+            }
 
             //This should only really be saved if the connection was successful, but there are a few reasons I am not doing that.
             Program.savedData.data.clientInfo.address = _address;
@@ -81,6 +79,36 @@ namespace OBS_Remote_Controls.WPF.Pages
                     status.Content = "Status: Connected";
                 }
             });*/
+        }
+
+        private void Page_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (IsVisible)
+            {
+                password.Password = Program.savedData.data.clientInfo.password;
+            }
+        }
+
+        private void address_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            string _address = address.Text;
+            if (!string.IsNullOrEmpty(_address))
+            {
+                Match match = addressRegex.Match(_address);
+                if (match == null || match.Length != _address.Length)
+                {
+                    //I can't seem to get this to work. This code is reached but I can't seem to get the colour to change.
+                    address.BorderBrush = "#FF0000".GetBrush();
+                }
+                else
+                {
+                    address.BorderBrush = Styles.foregroundColour.GetBrush();
+                }
+            }
+            else
+            {
+                address.BorderBrush = Styles.foregroundColour.GetBrush();
+            }
         }
     }
 }
