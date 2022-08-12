@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="obs-websocket-dotnet" Version="4.9.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="CSharpTools.ConsoleExtensions">
+      <HintPath>O:\GitHub\ReadieFur\CSharpTools\src\CSharpTools.ConsoleExtensions\obj\Release\netstandard2.0\CSharpTools.ConsoleExtensions.dll</HintPath>
+    </Reference>
+    <Reference Include="GlobalInputHook">
+      <HintPath>O:\GitHub\ReadieFur\GlobalInputHook\src\GlobalInputHook\obj\Release\GlobalInputHook.exe</HintPath>
+    </Reference>
+  </ItemGroup>
+  
+</Project>

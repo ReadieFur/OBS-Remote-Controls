@@ -1,0 +1,184 @@
+{
+  "CreateScene": {
+    "sceneName": "String"
+  },
+  "SetAudioTrack": {
+    "sourceName": "String",
+    "trackNum": "Int32",
+    "isActive": "Boolean"
+  },
+  "StartVirtualCam": {},
+  "StopVirtualCam": {},
+  "ToggleVirtualCam": {},
+  "TriggerHotkeyByName": {
+    "hotkeyName": "String"
+  },
+  "SetCurrentScene": {
+    "sceneName": "String"
+  },
+  "SetSceneTransitionOverride": {
+    "sceneName": "String",
+    "transitionName": "String",
+    "transitionDuration": "Int32"
+  },
+  "RemoveSceneTransitionOverride": {
+    "sceneName": "String"
+  },
+  "SetSourceRender": {
+    "itemName": "String",
+    "visible": "Boolean",
+    "sceneName": "String"
+  },
+  "SetTBarPosition": {
+    "position": "Double",
+    "release": "Boolean"
+  },
+  "ReorderSourceFilter": {
+    "sourceName": "String",
+    "filterName": "String",
+    "newIndex": "Int32"
+  },
+  "SetSourceFilterVisibility": {
+    "sourceName": "String",
+    "filterName": "String",
+    "filterEnabled": "Boolean"
+  },
+  "ReleaseTBar": {},
+  "ToggleStreaming": {},
+  "ToggleRecording": {},
+  "SetCurrentTransition": {
+    "transitionName": "String"
+  },
+  "SetTransitionDuration": {
+    "duration": "Int32"
+  },
+  "SetVolume": {
+    "sourceName": "String",
+    "volume": "Single",
+    "useDecibel": "Boolean"
+  },
+  "SetMute": {
+    "sourceName": "String",
+    "mute": "Boolean"
+  },
+  "ToggleMute": {
+    "sourceName": "String"
+  },
+  "SetSceneItemPosition": {
+    "itemName": "String",
+    "x": "Single",
+    "y": "Single",
+    "sceneName": "String"
+  },
+  "SetSceneItemTransform": {
+    "itemName": "String",
+    "rotation": "Single",
+    "xScale": "Single",
+    "yScale": "Single",
+    "sceneName": "String"
+  },
+  "SetCurrentSceneCollection": {
+    "scName": "String"
+  },
+  "SetCurrentProfile": {
+    "profileName": "String"
+  },
+  "StartStreaming": {},
+  "StopStreaming": {},
+  "StartStopStreaming": {},
+  "StartRecording": {},
+  "StopRecording": {},
+  "StartStopRecording": {},
+  "PauseRecording": {},
+  "ResumeRecording": {},
+  "SetRecordingFolder": {
+    "recFolder": "String"
+  },
+  "DisableStudioMode": {},
+  "EnableStudioMode": {},
+  "SetStudioMode": {
+    "enable": "Boolean"
+  },
+  "ToggleStudioMode": {},
+  "SetPreviewScene": {
+    "previewScene": "String"
+  },
+  "TransitionToProgram": {
+    "transitionDuration": "Int32",
+    "transitionName": "String"
+  },
+  "ToggleReplayBuffer": {},
+  "StartReplayBuffer": {},
+  "StopReplayBuffer": {},
+  "StartStopReplayBuffer": {},
+  "SaveReplayBuffer": {},
+  "SetSyncOffset": {
+    "sourceName": "String",
+    "syncOffset": "Int32"
+  },
+  "DeleteSceneItem": {
+    "sceneItemId": "Int32",
+    "sceneName": "String"
+  },
+  "ResetSceneItem": {
+    "itemName": "String",
+    "sceneName": "String"
+  },
+  "SendCaptions": {
+    "text": "String"
+  },
+  "SetFilenameFormatting": {
+    "filenameFormatting": "String"
+  },
+  "DuplicateSceneItem": {
+    "fromSceneName": "String",
+    "toSceneName": "String",
+    "sceneItemID": "Int32"
+  },
+  "SaveStreamSettings": {},
+  "SetHeartbeat": {
+    "enable": "Boolean"
+  },
+  "OpenProjector": {
+    "projectorType": "String",
+    "monitor": "Int32",
+    "geometry": "String",
+    "name": "String"
+  },
+  "SetSourceName": {
+    "currentName": "String",
+    "newName": "String"
+  },
+  "SetAudioMonitorType": {
+    "sourceName": "String",
+    "monitorType": "String"
+  },
+  "RefreshBrowserSource": {
+    "sourceName": "String"
+  },
+  "RestartMedia": {
+    "sourceName": "String"
+  },
+  "StopMedia": {
+    "sourceName": "String"
+  },
+  "NextMedia": {
+    "sourceName": "String"
+  },
+  "PreviousMedia": {
+    "sourceName": "String"
+  },
+  "SetMediaTime": {
+    "sourceName": "String",
+    "timestamp": "Int32"
+  },
+  "ScrubMedia": {
+    "sourceName": "String",
+    "timeOffset": "Int32"
+  },
+  "Connect": {
+    "url": "String",
+    "password": "String"
+  },
+  "Disconnect": {}
+}

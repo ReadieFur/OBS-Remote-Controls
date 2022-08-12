@@ -1,8 +1,0 @@
-☐ Info page using the heartbeat data.
-☐ Add more logging.
-☐ Add an update changes class to convert any old data to a new format. E.g. an update helper class and store the old version in the config file.
-☐ Add notifications on state changes, do this by extending and overriding the OBSWebsocket class.
-☐ Change the logo/icon.
-☐ Add start minimised.
-☐ Add Run on startup.
-☐ Limit to one instance.

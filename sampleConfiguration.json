@@ -1,0 +1,42 @@
+{
+  "configurationVersion": 1,
+  "ipAddress": "127.0.0.1",
+  "port": 4444,
+  "password": "",
+  "hookUpdateRateMS": 10,
+  "macros": [
+    {
+      "mouseBoundsLeft": null,
+      "mouseBoundsTop": null,
+      "mouseBoundsRight": null,
+      "mouseBoundsBottom": null,
+      "mouseButtons": [],
+      "keyboardButtons": [
+        "LMenu",
+        "F9"
+      ],
+      "actions": [
+        {
+          "method": "SaveReplayBuffer",
+          "parameters": {}
+        }
+      ]
+    },
+    {
+      "mouseBoundsLeft": 0,
+      "mouseBoundsTop": 0,
+      "mouseBoundsRight": 1920,
+      "mouseBoundsBottom": 1080,
+      "mouseButtons": [],
+      "keyboardButtons": [],
+      "actions": [
+        {
+          "method": "SetCurrentSceneCollection",
+          "parameters": {
+            "scName": "Middle Display"
+          }
+        }
+      ]
+    }
+  ]
+}
