@@ -30,7 +30,7 @@ namespace OBS_Remote_Controls.AppData
         {
             public Forms.Keys key = Forms.Keys.None; //This value should be checked, if it is set to none then dont save the hotkey.
             public HotkeyController.KeyModifiers combination = HotkeyController.KeyModifiers.NoRepeat; //Placeholder  value.
-            public WPF.Pages.Hotkeys.Actions action = WPF.Pages.Hotkeys.Actions.SaveReplayBuffer; //Placeholder value.
+            public CustomOBSWebsocket.OBSActions action = CustomOBSWebsocket.OBSActions.SaveReplayBuffer; //Placeholder value.
         }
     }
 }

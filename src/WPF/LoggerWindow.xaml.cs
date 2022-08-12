@@ -14,9 +14,10 @@ namespace OBS_Remote_Controls.WPF
     /// </summary>
     public partial class LoggerWindow : Window
     {
-        private bool applicationShutdown = false;
-
         public static FontFamily font = new FontFamily("Consolas");
+        
+        private bool applicationShutdown = false;
+        private readonly int frameLevel;
 
         public static class Colours
         {
@@ -29,13 +30,42 @@ namespace OBS_Remote_Controls.WPF
             public static Brush darkGray = Colors.DarkGray.ToString().GetBrush();
         }
 
-        private readonly int frameLevel;
 
         public LoggerWindow(int _frameLevel = 2)
         {
             InitializeComponent();
             frameLevel = _frameLevel;
             Application.Current.Exit += Application_Exit;
+        }
+
+        private void LoggerWindow_Log(LogLevel logLevel, string message)
+        {
+            switch (logLevel)
+            {
+                case LogLevel.Debug:
+                    Debug(message);
+                    break;
+                case LogLevel.Info:
+                    Info(message);
+                    break;
+                case LogLevel.Warning:
+                    Warning(message);
+                    break;
+                case LogLevel.Error:
+                    Error(message);
+                    break;
+                case LogLevel.Critical:
+                    Critical(message);
+                    break;
+                case LogLevel.Notice:
+                    Notice(message);
+                    break;
+                case LogLevel.Trace:
+                    Trace(message);
+                    break;
+                default: //None
+                    break;
+            }
         }
 
         private void Application_Exit(object sender, ExitEventArgs e)

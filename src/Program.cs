@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows;
 using OBS_Remote_Controls.WPF;
-using OBSWebsocketDotNet;
 using Microsoft.Toolkit.Uwp.Notifications;
 
 namespace OBS_Remote_Controls
@@ -13,7 +12,7 @@ namespace OBS_Remote_Controls
     {
         public static JSONWriter<AppData.Structure> savedData = new JSONWriter<AppData.Structure>("./Preferences.json");
 
-        private OBSWebsocket obsWebsocket;
+        private CustomOBSWebsocket obsWebsocket;
         private MainWindow mainWindow;
         private SystemTray systemTray;
 
@@ -47,7 +46,7 @@ namespace OBS_Remote_Controls
                 }
             });
 
-            obsWebsocket = new OBSWebsocket();
+            obsWebsocket = new CustomOBSWebsocket();
             obsWebsocket.Connected += (s, e) =>
             {
                 if (savedData.data.preferences.showNotifications)

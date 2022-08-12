@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
-using OBSWebsocketDotNet;
 using System.Text.RegularExpressions;
 
 namespace OBS_Remote_Controls.WPF.Pages
@@ -13,9 +12,9 @@ namespace OBS_Remote_Controls.WPF.Pages
     {
         private Regex addressRegex = new Regex(@"ws:\/\/(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}):\d{4}", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
-        private readonly OBSWebsocket obsWebsocket;
+        private readonly CustomOBSWebsocket obsWebsocket;
 
-        public Connection(ref OBSWebsocket _obsWebsocket)
+        public Connection(ref CustomOBSWebsocket _obsWebsocket)
         {
             InitializeComponent();
             

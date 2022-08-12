@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using OBSWebsocketDotNet;
 using Forms = System.Windows.Forms;
 using HotkeyController = OBS_Remote_Controls.Hotkeys;
 using System.Text.RegularExpressions;
@@ -16,15 +15,15 @@ namespace OBS_Remote_Controls.WPF.Pages
         private static readonly Regex capitalRegex = new Regex("[A-Z]");
         private static readonly IEnumerable<Forms.Keys> keys = Enum.GetValues(typeof(Forms.Keys)).Cast<Forms.Keys>();
         private static readonly IEnumerable<HotkeyController.KeyModifiers> keyModifiers = Enum.GetValues(typeof(HotkeyController.KeyModifiers)).Cast<HotkeyController.KeyModifiers>();
-        private static readonly IEnumerable<Actions> actions = Enum.GetValues(typeof(Actions)).Cast<Actions>();
+        private static readonly IEnumerable<CustomOBSWebsocket.OBSActions> actions = Enum.GetValues(typeof(CustomOBSWebsocket.OBSActions)).Cast<CustomOBSWebsocket.OBSActions>();
         private static readonly int comboBoxWidth = 195;
         private static readonly Thickness comboBoxMargin = new Thickness(0, 0, 12, 0);
 
-        private readonly OBSWebsocket obsWebsocket;
+        private readonly CustomOBSWebsocket obsWebsocket;
 
         private Dictionary<int, ItemSet> itemSets = new Dictionary<int, ItemSet>();
 
-        public Hotkeys(ref OBSWebsocket _obsWebsocket)
+        public Hotkeys(ref CustomOBSWebsocket _obsWebsocket)
         {
             InitializeComponent();
 
@@ -73,41 +72,17 @@ namespace OBS_Remote_Controls.WPF.Pages
         private void HotkeyManager_HotKeyPressed(object sender, HotkeyController.HotkeyArgs e)
         {
             List<AppData.Objects.Hotkey> hotkeys = Program.savedData.data.hotkeys.FindAll(hotkey => hotkey.key == e.Key && hotkey.combination == e.Modifiers);
-            
+
+            Logger.Debug("ee");
             foreach (AppData.Objects.Hotkey hotkey in hotkeys)
             {
-                switch (hotkey.action)
-                {
-                    case Actions.StartRecording:
-                        obsWebsocket.StartRecording();
-                        break;
-                    case Actions.StopRecording:
-                        obsWebsocket.StopRecording();
-                        break;
-                    case Actions.StartStreaming:
-                        obsWebsocket.StartStreaming();
-                        break;
-                    case Actions.StopStreaming:
-                        obsWebsocket.StopStreaming();
-                        break;
-                    case Actions.StarReplayBuffer:
-                        obsWebsocket.StartReplayBuffer();
-                        break;
-                    case Actions.StopReplayBuffer:
-                        obsWebsocket.StopReplayBuffer();
-                        break;
-                    case Actions.SaveReplayBuffer:
-                        obsWebsocket.SaveReplayBuffer();
-                        break;
-                    default: //Actions.None
-                        break;
-                }
+                obsWebsocket.SendOBSAction(hotkey.action);
             }
         }
 
         private KeyValuePair<int, ItemSet> CreateRow() { return _CreateRow(null, null, null); }
-        private KeyValuePair<int, ItemSet> CreateRow(Forms.Keys _key, HotkeyController.KeyModifiers _combination, Actions _action) { return _CreateRow(_key, _combination, _action); }
-        private KeyValuePair<int, ItemSet> _CreateRow(Forms.Keys? _key = null, HotkeyController.KeyModifiers? _combination = null, Actions? _action = null)
+        private KeyValuePair<int, ItemSet> CreateRow(Forms.Keys _key, HotkeyController.KeyModifiers _combination, CustomOBSWebsocket.OBSActions _action) { return _CreateRow(_key, _combination, _action); }
+        private KeyValuePair<int, ItemSet> _CreateRow(Forms.Keys? _key = null, HotkeyController.KeyModifiers? _combination = null, CustomOBSWebsocket.OBSActions? _action = null)
         {
             //Generate a random ID.
             int id;
@@ -154,9 +129,9 @@ namespace OBS_Remote_Controls.WPF.Pages
             actionComboBox.Width = comboBoxWidth - 5;
             actionComboBox.Margin = comboBoxMargin;
             actionComboBox.SelectionChanged += comboBox_SelectionChanged;
-            foreach (Actions action in actions)
+            foreach (CustomOBSWebsocket.OBSActions action in actions)
             {
-                if (action == Actions.None) { continue; }
+                if (action == CustomOBSWebsocket.OBSActions.None) { continue; }
 
                 string key = action.ToString();
                 string content = key[0].ToString();
@@ -211,8 +186,8 @@ namespace OBS_Remote_Controls.WPF.Pages
                     case "KeyModifiers":
                         itemSet.combination = (HotkeyController.KeyModifiers)((ComboBoxItem)e.AddedItems[0]).Tag;
                         break;
-                    case "Actions":
-                        itemSet.action = (Actions)((ComboBoxItem)e.AddedItems[0]).Tag;
+                    case "OBSActions":
+                        itemSet.action = (CustomOBSWebsocket.OBSActions)((ComboBoxItem)e.AddedItems[0]).Tag;
                         break;
                     default:
                         return;
@@ -243,7 +218,7 @@ namespace OBS_Remote_Controls.WPF.Pages
                     {
                         key = (Forms.Keys)itemSet.key,
                         combination = (HotkeyController.KeyModifiers)itemSet.combination,
-                        action = (Actions)itemSet.action
+                        action = (CustomOBSWebsocket.OBSActions)itemSet.action
                     });
                 }
             }
@@ -303,7 +278,7 @@ namespace OBS_Remote_Controls.WPF.Pages
             public int? id = null;
             public Forms.Keys? key = null;
             public HotkeyController.KeyModifiers? combination = null;
-            public Actions? action = null;
+            public CustomOBSWebsocket.OBSActions? action = null;
 
             public ItemSet(StackPanel _stackPanel, ComboBox _keyComboBox, ComboBox _combinationComboBox, ComboBox _actionComboBox)
             {
@@ -312,18 +287,6 @@ namespace OBS_Remote_Controls.WPF.Pages
                 combinationComboBox = _combinationComboBox;
                 actionComboBox = _actionComboBox;
             }
-        }
-
-        public enum Actions
-        {
-            None = 0,
-            StartRecording = 1,
-            StopRecording = 2,
-            StartStreaming = 3,
-            StopStreaming = 4,
-            StarReplayBuffer = 5,
-            StopReplayBuffer = 6,
-            SaveReplayBuffer = 7
         }
     }
 }

@@ -12,11 +12,11 @@ namespace OBS_Remote_Controls.WPF
     /// </summary>
     public partial class MainWindow : Window
     {
-        private readonly OBSWebsocket obsWebsocket;
+        private readonly CustomOBSWebsocket obsWebsocket;
 
         private readonly IReadOnlyDictionary<ListViewItem, Page> pages;
 
-        public MainWindow(ref OBSWebsocket _obsWebsocket)
+        public MainWindow(ref CustomOBSWebsocket _obsWebsocket)
         {
             InitializeComponent();
 

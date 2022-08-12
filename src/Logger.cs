@@ -4,7 +4,7 @@ using System.Reflection;
 
 namespace OBS_Remote_Controls
 {
-    internal static class Logger
+    public static class Logger
     {
 #if DEBUG
         public static LogLevel logLevel = LogLevel.Trace;
@@ -12,7 +12,7 @@ namespace OBS_Remote_Controls
         public static LogLevel logLevel = LogLevel.None;
 #endif
         //Disposal of this window should be ok to be handled automatically.
-        private static WPF.LoggerWindow windowInstance = new WPF.LoggerWindow(4);
+        private static WPF.LoggerWindow windowInstance = new WPF.LoggerWindow(5);
 
         public static void ShowWindow() { windowInstance.Show(); }
         public static void HideWindow() { windowInstance.Hide(); }

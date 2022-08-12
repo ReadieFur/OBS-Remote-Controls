@@ -40,10 +40,7 @@ namespace OBS_Remote_Controls.Hotkeys
 
         private static void OnHotKeyPressed(HotkeyArgs e)
         {
-            if (HotKeyPressed != null)
-            {
-                HotKeyPressed(null, e);
-            }
+            HotKeyPressed?.Invoke(null, e);
         }
 
         private static volatile MessageWindow _wnd;
