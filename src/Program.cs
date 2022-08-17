@@ -120,7 +120,7 @@ async void HookClientHelper_onData(SHookData data)
 {
     if (exiting || !obsWebsocket.IsConnected) return;
 
-#if DEBUG && true
+#if DEBUG && false
     ; ; //await Logger.Trace(JsonConvert.SerializeObject(data, Formatting.Indented));
 #endif
 
