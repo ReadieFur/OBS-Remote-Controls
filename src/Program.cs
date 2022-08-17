@@ -1,5 +1,4 @@
 ﻿using System.Reflection;
-using System.Windows.Forms;
 using CSharpTools.ConsoleExtensions;
 using GlobalInputHook.Tools;
 using GlobalInputHook.Objects;
@@ -19,9 +18,6 @@ bool exiting = false;
 SConfiguration configuration;
 OBSWebsocket obsWebsocket;
 HookClientHelper hookClientHelper;
-SPoint cursorPosition = new();
-List<EMouseButton> pressedMouseButtons = new();
-List<Keys> pressedKeyboardKeys = new();
 Dictionary<SOBSMacro, List<Action<OBSWebsocket>>> macros = new();
 #endregion
 
@@ -45,16 +41,27 @@ if (configuration.macros.Count == 0)
 obsWebsocket = new OBSWebsocket();
 obsWebsocket.Connected += ObsWebsocket_Connected;
 obsWebsocket.Disconnected += ObsWebsocket_Disconnected;
+/*await Logger.Info("Connecting to OBS websocket...");
+//Don't await this this first time around, prevents hanging on load.
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+Task.Run(async () =>
+{
+    while (!await ConnectOBSWebsocket())
+    {
+        //Find out why this is blocking here.
+        await Logger.Info("Reconnecting to OBS websocket...");
+        await Task.Delay(1000);
+    }
+});*/
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 
 hookClientHelper = HookClientHelper.GetOrCreateInstance("obs_remote_controls_custom", configuration.hookUpdateRateMS);
-hookClientHelper.mouseEvent += HookClientHelper_mouseEvent;
-hookClientHelper.keyboardEvent += HookClientHelper_keyboardEvent;
+hookClientHelper.onData += HookClientHelper_onData;
 
 AppDomain.CurrentDomain.ProcessExit += (_, _) => Unload();
 #endregion
 
 #region Load configuration options
-await ConnectOBSWebsocket();
 foreach (SOBSMacro macro in configuration.macros)
 {
     if (macros.ContainsKey(macro))
@@ -74,6 +81,8 @@ foreach (SOBSMacro macro in configuration.macros)
     macros.Add(macro, actions);
 }
 #endregion
+
+await ConnectOBSWebsocket();
 
 #region UI (CLI) loop
 Dictionary<string, Action> options = new Dictionary<string, Action>()
@@ -107,57 +116,12 @@ void Unload()
     obsWebsocket?.Disconnect();
 }
 
-void HookClientHelper_mouseEvent(SMouseEventData mouseEventData)
+async void HookClientHelper_onData(SHookData data)
 {
-    switch (mouseEventData.eventType)
-    {
-        case EMouseEvent.MOUSE_MOVE:
-            cursorPosition = mouseEventData.cursorPosition;
-            break;
-        case EMouseEvent.LBUTTON_DOWN:
-            if (!pressedMouseButtons.Contains(EMouseButton.Left)) pressedMouseButtons.Add(EMouseButton.Left);
-            break;
-        case EMouseEvent.LBUTTON_UP:
-            if (pressedMouseButtons.Contains(EMouseButton.Left)) pressedMouseButtons.Remove(EMouseButton.Left);
-            break;
-        case EMouseEvent.RBUTTON_DOWN:
-            if (!pressedMouseButtons.Contains(EMouseButton.Right)) pressedMouseButtons.Add(EMouseButton.Right);
-            break;
-        case EMouseEvent.RBUTTON_UP:
-            if (pressedMouseButtons.Contains(EMouseButton.Right)) pressedMouseButtons.Remove(EMouseButton.Right);
-            break;
-        case EMouseEvent.MOUSEWHEEL:
-            //Skip this for now.
-            break;
-    }
-    HookClientHelper_Update();
-}
+    if (exiting || !obsWebsocket.IsConnected) return;
 
-void HookClientHelper_keyboardEvent(SKeyboardEventData keyboardEventData)
-{
-    switch (keyboardEventData.eventType)
-    {
-        case EKeyEvent.SYSKEY_UP:
-        case EKeyEvent.KEY_UP:
-            if (pressedKeyboardKeys.Contains((Keys)keyboardEventData.keyCode)) pressedKeyboardKeys.Remove((Keys)keyboardEventData.keyCode);
-            break;
-        case EKeyEvent.SYSKEY_DOWN:
-        case EKeyEvent.KEY_DOWN:
-            if (!pressedKeyboardKeys.Contains((Keys)keyboardEventData.keyCode)) pressedKeyboardKeys.Add((Keys)keyboardEventData.keyCode);
-            break;
-    }
-    HookClientHelper_Update();
-}
-
-async void HookClientHelper_Update()
-{
-    if (exiting) return;
-    else if (!obsWebsocket.IsConnected) return;
-
-#if DEBUG && false
-    await Logger.Trace(JsonConvert.SerializeObject(cursorPosition, Formatting.Indented)
-        + "\n" + JsonConvert.SerializeObject(pressedMouseButtons, Formatting.Indented)
-        + "\n" + JsonConvert.SerializeObject(pressedKeyboardKeys, Formatting.Indented));
+#if DEBUG && true
+    ; ; //await Logger.Trace(JsonConvert.SerializeObject(data, Formatting.Indented));
 #endif
 
     foreach (KeyValuePair<SOBSMacro, List<Action<OBSWebsocket>>> keyValuePair in macros)
@@ -169,16 +133,14 @@ async void HookClientHelper_Update()
             && macro.mouseBoundsTop != null
             && macro.mouseBoundsRight != null
             && macro.mouseBoundsBottom != null)
-        {
             cursorPositionValid =
-                cursorPosition.x >= macro.mouseBoundsLeft
-                && cursorPosition.x <= macro.mouseBoundsRight
-                && cursorPosition.y >= macro.mouseBoundsTop
-                && cursorPosition.y <= macro.mouseBoundsBottom;
-        }
+                data.mousePosition.x >= macro.mouseBoundsLeft
+                && data.mousePosition.x <= macro.mouseBoundsRight
+                && data.mousePosition.y >= macro.mouseBoundsTop
+                && data.mousePosition.y <= macro.mouseBoundsBottom;
         else cursorPositionValid = true;
-        bool mouseButtonsValid = macro.mouseButtons.All(b => pressedMouseButtons.Contains(b));
-        bool keyboardKeysValid = macro.keyboardButtons.All(k => pressedKeyboardKeys.Contains(k));
+        bool keyboardKeysValid = macro.keyboardButtons.All(k => data.pressedKeyboardKeys.Contains(k));
+        bool mouseButtonsValid = macro.mouseButtons.All(b => data.pressedMouseButtons.Contains(b));
 
         //Run the actions on the macro.
         if (cursorPositionValid && mouseButtonsValid && keyboardKeysValid)
@@ -218,7 +180,7 @@ async void BuildSampleData()
             {
                 new()
                 {
-                    keyboardButtons = new() { Keys.LMenu, Keys.F9 }, //ALT + F9
+                    keyboardButtons = new() { EKeyboardKeys.LMenu, EKeyboardKeys.F9 }, //ALT + F9
                     actions = new()
                     {
                         {
@@ -264,12 +226,12 @@ Task<bool> ConnectOBSWebsocket()
     return Task.Run(async () =>
     {
         try { obsWebsocket.Connect($"ws://{configuration.ipAddress}:{configuration.port}", configuration.password); }
-        catch
-        {
-            await Logger.Warning("Failed to connect to OBS websocket.");
-            return false;
-        }
-        return true;
+        catch {}
+
+        if (obsWebsocket.IsConnected) return true;
+        
+        await Logger.Warning("Failed to connect to OBS websocket.");
+        return false;
     });
 }
 

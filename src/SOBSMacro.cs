@@ -1,4 +1,4 @@
-﻿using System.Windows.Forms;
+﻿using GlobalInputHook.Objects;
 
 namespace OBSRemoteControlsCustom
 {
@@ -8,8 +8,8 @@ namespace OBSRemoteControlsCustom
         public int? mouseBoundsTop;
         public int? mouseBoundsRight;
         public int? mouseBoundsBottom;
-        public List<EMouseButton> mouseButtons;
-        public List<Keys> keyboardButtons;
+        public List<EMouseButtons> mouseButtons;
+        public List<EKeyboardKeys> keyboardButtons;
         public List<SMethodData> actions;
 
         public SOBSMacro()

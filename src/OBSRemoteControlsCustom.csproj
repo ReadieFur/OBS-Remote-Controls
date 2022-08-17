@@ -17,7 +17,7 @@
       <HintPath>O:\GitHub\ReadieFur\CSharpTools\src\CSharpTools.ConsoleExtensions\obj\Release\netstandard2.0\CSharpTools.ConsoleExtensions.dll</HintPath>
     </Reference>
     <Reference Include="GlobalInputHook">
-      <HintPath>O:\GitHub\ReadieFur\GlobalInputHook\src\GlobalInputHook\obj\Release\GlobalInputHook.exe</HintPath>
+      <HintPath>..\..\GlobalInputHook\src\GlobalInputHook\bin\Release\GlobalInputHook.exe</HintPath>
     </Reference>
   </ItemGroup>
   
