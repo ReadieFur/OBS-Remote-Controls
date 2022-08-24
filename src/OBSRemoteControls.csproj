@@ -8,6 +8,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="obs-websocket-dotnet" Version="4.9.1" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="CSharpTools.Pipes">
       <HintPath>..\..\GlobalInputHook\src\GlobalInputHook\bin\Release\CSharpTools.Pipes.dll</HintPath>
     </Reference>
