@@ -364,3 +364,5 @@ FodyWeavers.xsd
 .idea
 
 ##USER DEFINED:
+src/Icon.png
+src/Thumbs.db
