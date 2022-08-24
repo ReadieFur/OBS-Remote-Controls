@@ -13,11 +13,13 @@ namespace OBSRemoteControls
         {
             mainWindow = new();
             await mainWindow.ShowAsync();
+            
             Environment.Exit(0);
         }
 
         protected override void OnExit(ExitEventArgs e)
         {
+            if (mainWindow.Visibility == Visibility.Visible) mainWindow.Close();
             base.OnExit(e);
         }
     }
