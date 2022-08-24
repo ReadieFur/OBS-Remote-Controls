@@ -27,6 +27,48 @@
             <Setter Property="HorizontalContentAlignment" Value="Center"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
         </Style>
+        <Style x:Key="PasswordBoxStyle1" TargetType="{x:Type PasswordBox}">
+            <Setter Property="PasswordChar" Value="●"/>
+            <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"/>
+            <Setter Property="BorderBrush" Value="{Binding Accent, ElementName=self}"/>
+            <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="KeyboardNavigation.TabNavigation" Value="None"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="AllowDrop" Value="true"/>
+            <Setter Property="ScrollViewer.PanningMode" Value="VerticalFirst"/>
+            <Setter Property="Stylus.IsFlicksEnabled" Value="False"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type PasswordBox}">
+                        <Border x:Name="border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" SnapsToDevicePixels="True">
+                            <ScrollViewer x:Name="PART_ContentHost" Focusable="false" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsEnabled" Value="false">
+                                <Setter Property="Opacity" TargetName="border" Value="0.56"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="true">
+                                <Setter Property="BorderBrush" TargetName="border" Value="{Binding Accent, ElementName=self}"/>
+                            </Trigger>
+                            <Trigger Property="IsKeyboardFocused" Value="true">
+                                <Setter Property="BorderBrush" TargetName="border" Value="{Binding Accent, ElementName=self}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <MultiTrigger>
+                    <MultiTrigger.Conditions>
+                        <Condition Property="IsInactiveSelectionHighlightEnabled" Value="true"/>
+                        <Condition Property="IsSelectionActive" Value="false"/>
+                    </MultiTrigger.Conditions>
+                    <Setter Property="SelectionBrush" Value="{DynamicResource {x:Static SystemColors.InactiveSelectionHighlightBrushKey}}"/>
+                </MultiTrigger>
+            </Style.Triggers>
+        </Style>
     </tc:WindowBase.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -46,19 +88,6 @@
             </Grid.RowDefinitions>
             <Grid.Resources>
                 <Thickness x:Key="TextBox.Margin" Top="0" Left="10" Bottom="10" Right="10"/>
-                <Style TargetType="{x:Type tc:TextBox}"
-                    BasedOn="{x:Static tc:TextBox.BASE_STYLE}">
-                    <Setter Property="VerticalAlignment" Value="Stretch"/>
-                    <Setter Property="HorizontalAlignment" Value="Stretch"/>
-                    <Setter Property="Margin" Value="{StaticResource TextBox.Margin}"/>
-                    <Setter Property="Background" Value="{Binding BackgroundAlt, ElementName=self}"/>
-                    <Setter Property="BorderBrush" Value="{Binding Accent, ElementName=self}"/>
-                    <Setter Property="Foreground" Value="{Binding Foreground, ElementName=self}"/>
-                    <Setter Property="MouseOverBorderBrush" Value="{Binding Accent, ElementName=self}"/>
-                    <Setter Property="FocusBorderBrush" Value="{Binding Accent, ElementName=self}"/>
-                    <Setter Property="SelectionBrush" Value="{Binding Accent, ElementName=self}"/>
-                    <Setter Property="CaretBrush" Value="{Binding Foreground, ElementName=self}"/>
-                </Style>
                 <Style TargetType="{x:Type Label}">
                     <Setter Property="VerticalAlignment" Value="Bottom"/>
                     <Setter Property="Margin" Value="5,0,0,0"/>
@@ -76,10 +105,27 @@
             </Grid.Resources>
             <Label Content="Address" Grid.Column="0" Grid.Row="0"/>
             <Border Grid.Column="0" Grid.Row="1"/>
-            <tc:TextBox x:Name="addressTextBox" Grid.Column="0" Grid.Row="1"/>
+            <tc:TextBox x:Name="addressTextBox" Grid.Column="0" Grid.Row="1"
+                HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                Margin="{StaticResource TextBox.Margin}"
+                Background="{Binding BackgroundAlt, ElementName=self}"
+                BorderBrush="{Binding Accent, ElementName=self}"
+                Foreground="{Binding Foreground, ElementName=self}"
+                MouseOverBorderBrush="{Binding Accent, ElementName=self}"
+                FocusBorderBrush="{Binding Accent, ElementName=self}"
+                SelectionBrush="{Binding Accent, ElementName=self}"
+                CaretBrush="{Binding Foreground, ElementName=self}"/>
             <Label Content="Password" Grid.Column="1" Grid.Row="0"/>
             <Border Grid.Column="1" Grid.Row="1"/>
-            <tc:TextBox x:Name="passwordTextBox" Grid.Column="1" Grid.Row="1"/>
+            <PasswordBox x:Name="passwordBox" Grid.Column="1" Grid.Row="1"
+                Style="{DynamicResource PasswordBoxStyle1}"
+                HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                Margin="{StaticResource TextBox.Margin}"
+                Background="{Binding BackgroundAlt, ElementName=self}"
+                BorderBrush="{Binding Accent, ElementName=self}"
+                Foreground="{Binding Foreground, ElementName=self}"
+                SelectionBrush="{Binding Accent, ElementName=self}"
+                CaretBrush="{Binding Foreground, ElementName=self}"/>
             <tc:Button x:Name="connectButton" Content="Connect" Grid.Column="2" Grid.Row="1"
                 VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
                 Margin="{StaticResource TextBox.Margin}"
