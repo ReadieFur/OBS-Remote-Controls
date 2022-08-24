@@ -1,14 +1,119 @@
-﻿<templateControls:WindowChrome xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+﻿<tc:WindowChrome xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         
         xmlns:local="clr-namespace:OBSRemoteControls"
-        xmlns:templateControls="clr-namespace:WPFTemplate.Controls;assembly=WPFTemplate"
+        xmlns:tc="clr-namespace:WPFTemplate.Controls;assembly=WPFTemplate"
+        xmlns:extensions="clr-namespace:WPFTemplate.Extensions;assembly=WPFTemplate"
         x:Class="OBSRemoteControls.MainWindow"
         
-        d:DesignHeight="450" d:DesignWidth="800" Height="450" Width="800"
+        x:Name="self"
+        d:DesignWidth="560" d:DesignHeight="315" MinWidth="560" MinHeight="315"
+        SizeToContent="WidthAndHeight"
         Title="OBS Remote Controls">
-    <Grid/>
-</templateControls:WindowChrome>
+    <tc:WindowBase.Resources>
+        <Style x:Key="buttonBindings" TargetType="{x:Type tc:Button}" BasedOn="{x:Static tc:Button.BASE_STYLE}">
+            <Setter Property="Background" Value="{Binding BackgroundAlt, ElementName=self}"/>
+            <Setter Property="BorderBrush" Value="{Binding Accent, ElementName=self}"/>
+            <Setter Property="Foreground" Value="{Binding Foreground, ElementName=self}"/>
+            <Setter Property="MouseOverBackground" Value="{Binding Background, ElementName=self}"/>
+            <Setter Property="MouseOverBorderBrush" Value="{Binding Accent, ElementName=self}"/>
+            <Setter Property="MouseOverForeground" Value="{Binding Foreground, ElementName=self}"/>
+            <Setter Property="PressedBackground" Value="{Binding Accent, ElementName=self}"/>
+            <Setter Property="PressedBorderBrush" Value="{Binding Accent, ElementName=self}"/>
+            <Setter Property="PressedForeground" Value="{Binding Foreground, ElementName=self}"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+    </tc:WindowBase.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="55px"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="3*"/>
+                <ColumnDefinition Width="3*"/>
+                <ColumnDefinition Width="75px"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid.Resources>
+                <Thickness x:Key="TextBox.Margin" Top="0" Left="10" Bottom="10" Right="10"/>
+                <Style TargetType="{x:Type tc:TextBox}"
+                    BasedOn="{x:Static tc:TextBox.BASE_STYLE}">
+                    <Setter Property="VerticalAlignment" Value="Stretch"/>
+                    <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                    <Setter Property="Margin" Value="{StaticResource TextBox.Margin}"/>
+                    <Setter Property="Background" Value="{Binding BackgroundAlt, ElementName=self}"/>
+                    <Setter Property="BorderBrush" Value="{Binding Accent, ElementName=self}"/>
+                    <Setter Property="Foreground" Value="{Binding Foreground, ElementName=self}"/>
+                    <Setter Property="MouseOverBorderBrush" Value="{Binding Accent, ElementName=self}"/>
+                    <Setter Property="FocusBorderBrush" Value="{Binding Accent, ElementName=self}"/>
+                    <Setter Property="SelectionBrush" Value="{Binding Accent, ElementName=self}"/>
+                    <Setter Property="CaretBrush" Value="{Binding Foreground, ElementName=self}"/>
+                </Style>
+                <Style TargetType="{x:Type Label}">
+                    <Setter Property="VerticalAlignment" Value="Bottom"/>
+                    <Setter Property="Margin" Value="5,0,0,0"/>
+                    <Setter Property="Foreground" Value="{Binding Foreground, ElementName=self}"/>
+                </Style>
+                <Style TargetType="{x:Type Border}">
+                    <!--I'm not sure why but my template backgrounds arent applying.
+                    So I am using this border element as the background.
+                    (as the backgrounds of the buttons appear to be transparent).-->
+                    <Setter Property="VerticalAlignment" Value="Stretch"/>
+                    <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                    <Setter Property="Margin" Value="{StaticResource TextBox.Margin}"/>
+                    <Setter Property="Background" Value="{Binding BackgroundAlt, ElementName=self}"/>
+                </Style>
+            </Grid.Resources>
+            <Label Content="Address" Grid.Column="0" Grid.Row="0"/>
+            <Border Grid.Column="0" Grid.Row="1"/>
+            <tc:TextBox x:Name="addressTextBox" Grid.Column="0" Grid.Row="1"/>
+            <Label Content="Password" Grid.Column="1" Grid.Row="0"/>
+            <Border Grid.Column="1" Grid.Row="1"/>
+            <tc:TextBox x:Name="passwordTextBox" Grid.Column="1" Grid.Row="1"/>
+            <tc:Button x:Name="connectButton" Content="Connect" Grid.Column="2" Grid.Row="1"
+                VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
+                Margin="{StaticResource TextBox.Margin}"
+                Style="{StaticResource buttonBindings}"/>
+        </Grid>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="3*"/>
+                <ColumnDefinition Width="3*"/>
+                <ColumnDefinition Width="75px"/>
+            </Grid.ColumnDefinitions>
+            <ListBox Background="Transparent" BorderBrush="Transparent">
+            </ListBox>
+        </Grid>
+        <Grid Grid.Row="2">
+            <Label x:Name="infoLabel" Foreground="{Binding Foreground, ElementName=self}"/>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,5,5">
+                <StackPanel.Resources>
+                    <Style TargetType="{x:Type tc:Button}" BasedOn="{StaticResource buttonBindings}">
+                        <Setter Property="Width" Value="{Binding Source={x:Static extensions:SystemParametersExt.instance}, Path=CaptionHeight}"/>
+                        <Setter Property="Height" Value="{Binding Source={x:Static extensions:SystemParametersExt.instance}, Path=CaptionHeight}"/>
+                        <Setter Property="FontFamily" Value="Segoe MDL2 Assets"/>
+                        <Setter Property="FontSize" Value="{Binding Source={x:Static extensions:SystemFontsExt.instance}, Path=SmallCaptionFontSize}"/>
+                        <Setter Property="Margin" Value="1,0,0,0"/>
+                        <Setter Property="Background" Value="Transparent"/>
+                        <Setter Property="BorderBrush" Value="Transparent"/>
+                        <Setter Property="MouseOverBackground" Value="{Binding BackgroundAlt, ElementName=self}"/>
+                        <Setter Property="MouseOverBorderBrush" Value="Transparent"/>
+                        <Setter Property="PressedBorderBrush" Value="Transparent"/>
+                    </Style>
+                </StackPanel.Resources>
+                <tc:Button x:Name="removeButton" Content="&#xE949;"/>
+                <tc:Button x:Name="addButton" Content="&#xE948;"/>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</tc:WindowChrome>
