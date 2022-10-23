@@ -2,9 +2,10 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net6.0-windows</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,8 +18,27 @@
       <HintPath>O:\GitHub\ReadieFur\CSharpTools\src\CSharpTools.ConsoleExtensions\obj\Release\netstandard2.0\CSharpTools.ConsoleExtensions.dll</HintPath>
     </Reference>
     <Reference Include="GlobalInputHook">
-      <HintPath>..\..\GlobalInputHook\src\GlobalInputHook\bin\Release\GlobalInputHook.exe</HintPath>
+      <HintPath>A:\GitHub\ReadieFur\GlobalInputHook\src\GlobalInputHook\bin\Release\GlobalInputHook.dll</HintPath>
     </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Resources\" />
   </ItemGroup>
   
 </Project>

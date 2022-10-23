@@ -6,6 +6,8 @@ using OBSRemoteControlsCustom;
 using OBSRemoteControlsCustom.Configuration;
 using OBSWebsocketDotNet;
 using Newtonsoft.Json;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 #region Program
 #if DEBUG
@@ -14,10 +16,12 @@ BuildSampleData();
 #endif
 
 #region Variables
+IntPtr? windowHandle = null;
+bool isWindowVisible = true;
+NotifyIcon trayIcon;
 bool exiting = false;
 SConfiguration configuration;
 OBSWebsocket obsWebsocket;
-HookClientHelper hookClientHelper;
 Dictionary<SOBSMacro, List<Action<OBSWebsocket>>> macros = new();
 #endregion
 
@@ -37,26 +41,18 @@ if (configuration.macros.Count == 0)
     await Logger.Warning("No macros are defined, exiting...");
     Environment.Exit(-1);
 }
+if (Environment.GetCommandLineArgs().Contains("-m")) ToggleWindowVisibility();
+
+trayIcon = new NotifyIcon();
+trayIcon.Icon = Resources.Icon;
+trayIcon.Visible = true;
+trayIcon.Click += (_, _) => ToggleWindowVisibility();
 
 obsWebsocket = new OBSWebsocket();
 obsWebsocket.Connected += ObsWebsocket_Connected;
 obsWebsocket.Disconnected += ObsWebsocket_Disconnected;
-/*await Logger.Info("Connecting to OBS websocket...");
-//Don't await this this first time around, prevents hanging on load.
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-Task.Run(async () =>
-{
-    while (!await ConnectOBSWebsocket())
-    {
-        //Find out why this is blocking here.
-        await Logger.Info("Reconnecting to OBS websocket...");
-        await Task.Delay(1000);
-    }
-});*/
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-
-hookClientHelper = HookClientHelper.GetOrCreateInstance("obs_remote_controls_custom", configuration.hookUpdateRateMS);
-hookClientHelper.onData += HookClientHelper_onData;
+DLLInstanceHelper.OnUpdate += GlobalInputHook_OnUpdate;
+DLLInstanceHelper.StartHookOnNewSTAMessageThread(configuration.hookUpdateRateMS > 0 ? configuration.hookUpdateRateMS : -1);
 
 AppDomain.CurrentDomain.ProcessExit += (_, _) => Unload();
 #endregion
@@ -66,7 +62,7 @@ foreach (SOBSMacro macro in configuration.macros)
 {
     if (macros.ContainsKey(macro))
     {
-        await Logger.Warning($"Duplicate macro detected '{macro}'.");
+        await Logger.Warning($"Duplicate macro detected '{macro}'.", false);
         continue;
     }
 
@@ -75,48 +71,69 @@ foreach (SOBSMacro macro in configuration.macros)
     foreach (SMethodData action in macro.actions)
     {
         if (OBSAction.BuildAction(action.method, action.parameters, out Action<OBSWebsocket> method)) actions.Add(method);
-        else await Logger.Warning($"Failed to load action '{action.method}'.");
+        else await Logger.Warning($"Failed to load action '{action.method}'.", false);
     }
 
     macros.Add(macro, actions);
 }
 #endregion
 
-await ConnectOBSWebsocket();
+_ = ConnectOBSWebsocket();
 
 #region UI (CLI) loop
-Dictionary<string, Action> options = new Dictionary<string, Action>()
+_ = Task.Run(() =>
 {
+    Dictionary<string, Action> options = new Dictionary<string, Action>()
     {
-        "exit",
-        () => {} //Handle unload after the UI loop.
+        {
+            "exit",
+            () => {} //Handle unload after the UI loop.
+        }
+    };
+    while (true)
+    {
+        string userInput = string.Empty;
+        try { userInput = Input.GetString(true, options.Keys.ToArray()); }
+        catch (IOException) { break; } //The terminal has closed.
+        catch { continue; }
+        options[userInput]();
+        if (userInput == "exit") Unload();
     }
-};
-while (true)
-{
-    string userInput = string.Empty;
-    try { userInput = Input.GetString(true, options.Keys.ToArray()); }
-    catch (IOException) { break; } //The terminal has closed.
-    catch { continue; }
-    options[userInput]();
-    if (userInput == "exit") break;
-}
+});
 #endregion
 
+Application.Run();
 Unload();
 #endregion
 
 //====
 
 #region Methods
-void Unload()
+//Shouldn't return.
+void Unload(int exitCode = 0)
 {
+    if (exiting) return;
     exiting = true;
-    hookClientHelper?.Dispose();
+    DLLInstanceHelper.Unhook();
     obsWebsocket?.Disconnect();
+    Environment.Exit(exitCode);
 }
 
-async void HookClientHelper_onData(SHookData data)
+[DllImport("user32.dll", SetLastError = true)]
+static extern IntPtr FindWindow(string? lpClassName, string lpWindowName);
+
+[DllImport("user32.dll")]
+[return: MarshalAs(UnmanagedType.Bool)]
+static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+
+void ToggleWindowVisibility()
+{
+    if (windowHandle == null) windowHandle = FindWindow(null, Console.Title);
+    ShowWindow(windowHandle.Value, isWindowVisible ? 0 : 1);
+    isWindowVisible = !isWindowVisible;
+}
+
+async void GlobalInputHook_OnUpdate(SHookData data)
 {
     if (exiting || !obsWebsocket.IsConnected) return;
 
@@ -145,11 +162,11 @@ async void HookClientHelper_onData(SHookData data)
         //Run the actions on the macro.
         if (cursorPositionValid && mouseButtonsValid && keyboardKeysValid)
         {
-            await Logger.Info($"Running macro '{macro}'.");
+            await Logger.Info($"Running macro '{macro}'.", false);
             foreach (Action<OBSWebsocket> action in keyValuePair.Value)
             {
                 try { action(obsWebsocket); }
-                catch (Exception ex) { await Logger.Error($"Failed to execute action: {ex.InnerException!.Message}"); }
+                catch (Exception ex) { await Logger.Error($"Failed to execute action: {ex.InnerException!.Message}", false); }
             }
         }
     }
@@ -167,9 +184,9 @@ async void BuildSampleData()
         simplifiedActions.Add(actionKVP.Key, simpleArgs);
     }
     string avaliableMethodsString = JsonConvert.SerializeObject(simplifiedActions, Formatting.Indented);
-    await Logger.Trace($"Avaliable methods:\n{avaliableMethodsString}");
+    await Logger.Trace($"Avaliable methods:\n{avaliableMethodsString}", false);
     try { File.WriteAllText(Environment.CurrentDirectory + "\\methods.json", avaliableMethodsString); }
-    catch { await Logger.Warning("Failed to write avaliable methods to file."); }
+    catch { await Logger.Warning("Failed to write avaliable methods to file.", false); }
 
     //Build a sample config.json file.
     SConfiguration sampleConfiguration = new SConfiguration()
@@ -218,26 +235,27 @@ async void BuildSampleData()
     };
     try { File.WriteAllText(Environment.CurrentDirectory + "\\sampleConfiguration.json",
         JsonConvert.SerializeObject(sampleConfiguration, ConfigurationHelper.JSON_SERIALIZER_SETTINGS)); }
-    catch { await Logger.Warning("Failed to write sample configuration to file."); }
+    catch { await Logger.Warning("Failed to write sample configuration to file.", false); }
 }
 
 Task<bool> ConnectOBSWebsocket()
 {
     return Task.Run(async () =>
     {
+        string exceptionString = string.Empty;
         try { obsWebsocket.Connect($"ws://{configuration.ipAddress}:{configuration.port}", configuration.password); }
-        catch {}
+        catch (Exception ex) { exceptionString = $" {ex.Message}"; }
 
         if (obsWebsocket.IsConnected) return true;
         
-        await Logger.Warning("Failed to connect to OBS websocket.");
+        await Logger.Warning($"Failed to connect to OBS websocket.{exceptionString}", false);
         return false;
     });
 }
 
 async void ObsWebsocket_Connected(object? sender, EventArgs e)
 {
-    await Logger.Info("Connected to OBS websocket server.");
+    await Logger.Info("Connected to OBS websocket server.", false);
     obsWebsocket.WSConnection.OnError += async (_, e) => await Logger.Error(e.Message);
 }
 
@@ -245,10 +263,10 @@ async void ObsWebsocket_Disconnected(object? sender, EventArgs e)
 {
     if (!exiting)
     {
-        await Logger.Info("Reconnecting to OBS websocket...");
+        await Logger.Info("Reconnecting to OBS websocket...", false);
         await Task.Delay(1000);
         await ConnectOBSWebsocket();
     }
-    else await Logger.Info("Disconnected from OBS websocket server.");
+    else await Logger.Info("Disconnected from OBS websocket server.", false);
 }
 #endregion
